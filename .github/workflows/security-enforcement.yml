@@ -19,10 +19,14 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-        cache: 'npm'
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: latest
 
     - name: Install dependencies
-      run: npm install
+      run: pnpm install
 
     - name: Run Security Enforcement
       run: npx ts-node scripts/ci-security-enforcement.ts
@@ -73,10 +77,14 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-        cache: 'npm'
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: latest
 
     - name: Install dependencies
-      run: npm install
+      run: pnpm install
 
     - name: TypeScript compilation check
       run: npx tsc --noEmit --skipLibCheck
