@@ -25,13 +25,13 @@ importers:
         specifier: ^8.5.0
         version: 8.44.0(eslint@9.36.0)(typescript@5.9.2)
       '@vitest/coverage-v8':
-        specifier: ^2.0.0
+        specifier: ^2.1.9
         version: 2.1.9(vitest@2.1.9)
       '@vitest/ui':
-        specifier: ^2.0.0
+        specifier: ^2.1.9
         version: 2.1.9(vitest@2.1.9)
       esbuild:
-        specifier: ^0.25.0
+        specifier: ^0.25.10
         version: 0.25.10
       eslint:
         specifier: ^9.9.0
@@ -52,7 +52,7 @@ importers:
         specifier: ^5.5.4
         version: 5.9.2
       vitest:
-        specifier: ^2.0.0
+        specifier: ^2.1.9
         version: 2.1.9(@types/node@22.18.6)(@vitest/ui@2.1.9)
 
 packages:
