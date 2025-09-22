@@ -220,7 +220,7 @@ export class UnifiedWebviewFactory {
                 </header>
 
                 <main class="webview-content">
-                    ${template.content}
+                    ${escapeHtml(template.content)}
                 </main>
 
                 ${Object.keys(metadata).length > 0 ? `

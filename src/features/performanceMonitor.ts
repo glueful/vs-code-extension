@@ -407,8 +407,8 @@ export class PerformanceMonitorProvider {
         }
 
         const items = slowQueries.map(query => ({
-            label: `${query.executionTime}ms - ${query.sql.substring(0, 60)}...`,
-            description: query.file ? `${query.file}:${query.line}` : '',
+            label: `${escapeHtml(String(query.executionTime))}ms - ${escapeHtml(query.sql.substring(0, 60))}...`,
+            description: query.file ? `${escapeHtml(query.file)}:${escapeHtml(String(query.line))}` : '',
             query
         }));
 

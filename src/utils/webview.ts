@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { escapeHtml } from './webviewSecurity';
 
 export function nonce(len = 32): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -32,10 +33,10 @@ export function createMessageHandler(panel: vscode.WebviewPanel, handlers: Recor
       try {
         await handler(message.payload);
       } catch (error) {
-        console.error(`Error handling webview command '${message.id}':`, error);
+        console.error(`Error handling webview command '${escapeHtml(message.id)}':`, error);
       }
     } else {
-      console.warn(`No handler found for webview command: ${message.id}`);
+      console.warn(`No handler found for webview command: ${escapeHtml(message.id)}`);
     }
   });
 }
@@ -78,7 +79,7 @@ export function generateSecureHtml(content: string): string {
     </style>
 </head>
 <body>
-    ${content}
+    ${escapeHtml(content)}
     <script nonce="${scriptNonce}">
         // VS Code API setup
         const vscode = acquireVsCodeApi();

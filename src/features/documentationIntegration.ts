@@ -602,24 +602,24 @@ export class DocumentationIntegrationProvider {
         const markdown = new vscode.MarkdownString();
         markdown.isTrusted = true;
 
-        markdown.appendMarkdown(`### ${context.name} Documentation\\n\\n`);
+        markdown.appendMarkdown(`### ${escapeHtml(context.name)} Documentation\\n\\n`);
 
         for (const doc of docs.slice(0, 2)) {
             if (doc.url) {
                 // Link to online documentation
-                markdown.appendMarkdown(`**[${doc.title}](${doc.url})**\\n`);
+                markdown.appendMarkdown(`**[${escapeHtml(doc.title)}](${doc.url})**\\n`);
             } else {
                 // Link to local file
-                markdown.appendMarkdown(`**[${doc.title}](${vscode.Uri.file(doc.path)})**\\n`);
+                markdown.appendMarkdown(`**[${escapeHtml(doc.title)}](${vscode.Uri.file(doc.path)})**\\n`);
             }
 
             if (doc.description) {
-                markdown.appendMarkdown(`${doc.description}\\n\\n`);
+                markdown.appendMarkdown(`${escapeHtml(doc.description)}\\n\\n`);
             }
         }
 
         if (docs.length > 2) {
-            markdown.appendMarkdown(`[View all ${docs.length} related documents...](command:glueful.docs.search?${encodeURIComponent(context.name)})\\n`);
+            markdown.appendMarkdown(`[View all ${docs.length} related documents...](command:glueful.docs.search?${encodeURIComponent(escapeHtml(context.name))})\\n`);
         }
 
         return markdown;
@@ -656,7 +656,7 @@ export class DocumentationIntegrationProvider {
         );
 
         if (results.length === 0) {
-            vscode.window.showInformationMessage(`No documentation found for "${query}"`);
+            vscode.window.showInformationMessage(`No documentation found for "${escapeHtml(query)}"`);
             return;
         }
 
@@ -668,7 +668,7 @@ export class DocumentationIntegrationProvider {
         }));
 
         const selected = await vscode.window.showQuickPick(items, {
-            placeHolder: `Found ${results.length} results for "${query}"`
+            placeHolder: `Found ${results.length} results for "${escapeHtml(query)}"`
         });
 
         if (selected) {

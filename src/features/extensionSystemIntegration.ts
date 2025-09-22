@@ -275,7 +275,7 @@ export class ExtensionSystemIntegrationProvider {
         extension.enabled = true;
         await this.updateExtensionRegistry();
 
-        vscode.window.showInformationMessage(`Extension '${extensionName}' enabled successfully`);
+        vscode.window.showInformationMessage(`Extension '${escapeHtml(extensionName)}' enabled successfully`);
         this.updateStatusBar();
     }
 
@@ -289,7 +289,7 @@ export class ExtensionSystemIntegrationProvider {
         extension.enabled = false;
         await this.updateExtensionRegistry();
 
-        vscode.window.showInformationMessage(`Extension '${extensionName}' disabled successfully`);
+        vscode.window.showInformationMessage(`Extension '${escapeHtml(extensionName)}' disabled successfully`);
         this.updateStatusBar();
     }
 
@@ -387,14 +387,14 @@ export class ExtensionSystemIntegrationProvider {
                 const { name } = payload;
                 if (name) {
                     await this.enableExtension(name);
-                    vscode.window.showInformationMessage(`Extension ${name} enabled`);
+                    vscode.window.showInformationMessage(`Extension ${escapeHtml(name)} enabled`);
                 }
             },
             'disableExtension': async (payload) => {
                 const { name } = payload;
                 if (name) {
                     await this.disableExtension(name);
-                    vscode.window.showInformationMessage(`Extension ${name} disabled`);
+                    vscode.window.showInformationMessage(`Extension ${escapeHtml(name)} disabled`);
                 }
             },
             'viewExtension': (payload) => {
@@ -406,7 +406,7 @@ export class ExtensionSystemIntegrationProvider {
             'configureExtension': (payload) => {
                 const { name } = payload;
                 if (name) {
-                    vscode.window.showInformationMessage(`Configure ${name} - Coming soon`);
+                    vscode.window.showInformationMessage(`Configure ${escapeHtml(name)} - Coming soon`);
                 }
             }
         };
@@ -536,7 +536,7 @@ export class ExtensionSystemIntegrationProvider {
         const extension = this.extensionRegistry.available[name];
         if (extension) {
             vscode.window.showInformationMessage(
-                `Extension: ${extension.name} v${extension.version}`,
+                `Extension: ${escapeHtml(extension.name)} v${escapeHtml(extension.version)}`,
                 'Open Folder'
             ).then(selection => {
                 if (selection === 'Open Folder') {
@@ -580,7 +580,7 @@ export class ExtensionSystemIntegrationProvider {
         }
 
         if (fs.existsSync(extensionDir)) {
-            vscode.window.showErrorMessage(`Extension directory '${name}' already exists`);
+            vscode.window.showErrorMessage(`Extension directory '${escapeHtml(name)}' already exists`);
             return;
         }
 
@@ -590,17 +590,17 @@ export class ExtensionSystemIntegrationProvider {
         const manifest: ExtensionComposer = {
             name,
             version: '1.0.0',
-            description: description || `Custom Glueful extension: ${name}`,
+            description: description || `Custom Glueful extension: ${escapeHtml(name)}`,
             author: author || 'Developer',
             type: 'glueful-extension',
             autoload: {
                 'psr-4': {
-                    [`${this.toPascalCase(name)}\\`]: 'src/'
+                    [`${escapeHtml(this.toPascalCase(name))}\\`]: 'src/'
                 }
             },
             extra: {
                 glueful: {
-                    provider: `${this.toPascalCase(name)}\\${this.toPascalCase(name)}ServiceProvider`
+                    provider: `${escapeHtml(this.toPascalCase(name))}\\${escapeHtml(this.toPascalCase(name))}ServiceProvider`
                 }
             }
         };
@@ -615,7 +615,7 @@ export class ExtensionSystemIntegrationProvider {
         fs.mkdirSync(srcDir);
 
         const providerClass = this.generateServiceProvider(name);
-        fs.writeFileSync(path.join(srcDir, `${this.toPascalCase(name)}ServiceProvider.php`), providerClass);
+        fs.writeFileSync(path.join(srcDir, `${escapeHtml(this.toPascalCase(name))}ServiceProvider.php`), providerClass);
 
         // Create routes directory
         const routesDir = path.join(extensionDir, 'routes');
@@ -629,7 +629,7 @@ export class ExtensionSystemIntegrationProvider {
         fs.writeFileSync(path.join(extensionDir, 'README.md'), readme);
 
         vscode.window.showInformationMessage(
-            `Extension '${name}' created successfully at ${extensionDir}`,
+            `Extension '${escapeHtml(name)}' created successfully at ${escapeHtml(extensionDir)}`,
             'Open Extension'
         ).then(selection => {
             if (selection === 'Open Extension') {
@@ -706,10 +706,10 @@ class ${className}ServiceProvider extends ServiceProvider
         // Register extension metadata
         if (\$this->app->has(\\Glueful\\Extensions\\ExtensionManager::class)) {
             \$this->app->get(\\Glueful\\Extensions\\ExtensionManager::class)->registerMeta(self::class, [
-                'slug' => '${name}',
-                'name' => '${className} Extension',
+                'slug' => '${escapeHtml(name)}',
+                'name' => '${escapeHtml(className)} Extension',
                 'version' => '1.0.0',
-                'description' => 'Custom ${className} extension for Glueful',
+                'description' => 'Custom ${escapeHtml(className)} extension for Glueful',
             ]);
         }
     }
@@ -736,9 +736,9 @@ class ${className}ServiceProvider extends ServiceProvider
 
     private generateReadme(name: string, description?: string, author?: string): string {
         const className = this.toPascalCase(name);
-        return `# ${className} Extension
+        return `# ${escapeHtml(className)} Extension
 
-${description || `A custom Glueful framework extension: ${name}`}
+${description || `A custom Glueful framework extension: ${escapeHtml(name)}`}
 
 ## Installation
 
@@ -769,7 +769,7 @@ To convert this to a Composer package:
 3. Install via Composer:
 
 \`\`\`bash
-composer require your-vendor/${name}
+composer require your-vendor/${escapeHtml(name)}
 \`\`\`
 
 ## Commands
@@ -781,10 +781,10 @@ Check extension status:
 php glueful extensions:list
 
 # Show detailed info
-php glueful extensions:info ${name}
+php glueful extensions:info ${escapeHtml(name)}
 
 # Explain why this extension was loaded
-php glueful extensions:why ${className}ServiceProvider
+php glueful extensions:why ${escapeHtml(className)}ServiceProvider
 \`\`\`
 
 ## Usage

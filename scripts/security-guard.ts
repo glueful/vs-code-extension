@@ -3,6 +3,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as glob from 'fast-glob';
+import { escapeHtml } from './utils/escapeHtml';
 
 interface SecurityViolation {
     file: string;
@@ -214,8 +215,8 @@ class SecurityGuard {
 
             for (const violation of violations) {
                 console.log(`  📄 ${violation.file}:${violation.line}:${violation.column}`);
-                console.log(`     ${violation.message}`);
-                console.log(`     ${violation.code}`);
+                console.log(`     ${escapeHtml(violation.message)}`);
+                console.log(`     ${escapeHtml(violation.code)}`);
                 console.log();
             }
         }

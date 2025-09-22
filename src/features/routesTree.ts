@@ -4,6 +4,7 @@ import { promises as fsp } from 'fs';
 import * as path from 'path';
 import { debounce } from '../utils/debounce';
 import { RobustRouteParser } from '../utils/routeParser';
+import { escapeHtml } from '../utils/webviewSecurity';
 
 type RouteItem = {
   method: string;
@@ -263,7 +264,7 @@ export class GluefulRoutesProvider implements vscode.TreeDataProvider<RouteNode>
     const classMatch = content.match(/class\s+(\w+)/);
 
     if (namespaceMatch && classMatch) {
-      return `${namespaceMatch[1]}\\${classMatch[1]}`;
+      return `${escapeHtml(namespaceMatch[1])}\\${classMatch[1]}`;
     } else if (classMatch) {
       return classMatch[1];
     }
@@ -401,7 +402,7 @@ class RouteNode extends vscode.TreeItem {
     ];
 
     if (route.name) {
-      tooltipLines.push(`**Name:** ${route.name}`);
+      tooltipLines.push(`**Name:** ${escapeHtml(route.name)}`);
     }
 
     this.tooltip = new vscode.MarkdownString(tooltipLines.join('\n\n'));

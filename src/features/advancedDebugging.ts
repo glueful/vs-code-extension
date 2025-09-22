@@ -245,7 +245,7 @@ export class AdvancedDebuggingProvider {
 
     private notifyBreakpointHit(breakpoint: BreakpointInfo, _timestamp: Date): void {
         vscode.window.showInformationMessage(
-            `Breakpoint hit: ${path.basename(breakpoint.file)}:${breakpoint.line}`,
+            `Breakpoint hit: ${escapeHtml(path.basename(breakpoint.file))}:${escapeHtml(String(breakpoint.line))}`,
             'View Debug Panel', 'Go to File'
         ).then(selection => {
             if (selection === 'View Debug Panel') {
@@ -312,7 +312,7 @@ export class AdvancedDebuggingProvider {
         await this.saveBreakpoints();
 
         vscode.window.showInformationMessage(
-            `Breakpoint added at ${path.basename(file)}:${line}`
+            `Breakpoint added at ${escapeHtml(path.basename(file))}:${escapeHtml(String(line))}`
         );
 
         this.updateDebugPanel();
