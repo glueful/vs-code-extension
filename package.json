@@ -490,6 +490,10 @@
     "compile": "tsc -p .",
     "watch": "tsc -w -p .",
     "package": "vsce package || echo 'Install vsce to package: npm i -g @vscode/vsce'",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
     "lint": "eslint 'src/**/*.{ts,tsx}' --max-warnings=0",
     "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix",
     "format": "prettier --check .",
@@ -512,7 +516,10 @@
     "@typescript-eslint/eslint-plugin": "^8.5.0",
     "prettier": "^3.3.3",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-prettier": "^5.2.1"
-    ,"sharp": "^0.33.4"
+    "eslint-plugin-prettier": "^5.2.1",
+    "vitest": "^2.0.0",
+    "@vitest/ui": "^2.0.0",
+    "@vitest/coverage-v8": "^2.0.0",
+    "sharp": "^0.33.4"
   }
 }

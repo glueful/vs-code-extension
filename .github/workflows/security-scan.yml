@@ -18,13 +18,17 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-        cache: 'npm'
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: latest
 
     - name: Install dependencies
-      run: npm ci
+      run: pnpm install --no-frozen-lockfile
 
     - name: Run security scan
-      run: npm run security:scan
+      run: pnpm run security:scan
 
     - name: Upload security report
       if: failure()
@@ -45,13 +49,17 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-        cache: 'npm'
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: latest
 
     - name: Install dependencies
-      run: npm ci
+      run: pnpm install --no-frozen-lockfile
 
     - name: Run npm audit
-      run: npm audit --audit-level moderate
+      run: pnpm audit --audit-level moderate
 
     - name: Check for known vulnerabilities
       run: npx audit-ci --moderate
