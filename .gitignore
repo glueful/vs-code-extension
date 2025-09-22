@@ -1,0 +1,69 @@
+### Node dependencies
+node_modules/
+
+### TypeScript build output
+out/
+dist/
+*.tsbuildinfo
+
+### VS Code extension packaging artifacts
+*.vsix
+
+### Logs & diagnostics
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+*.log
+
+### Coverage & test artifacts
+coverage/
+.nyc_output/
+
+### OS / Editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.orig
+
+### Environment / local config (add if created)
+.env
+.env.local
+.env.*.local
+
+### Tooling caches
+.eslintcache
+.cache/
+
+### Security / scan outputs (adjust if script paths differ)
+security-report.json
+security-scan-results/
+
+### Temporary files
+tmp/
+temp/
+*.tmp
+
+### Optional: lockfiles (uncomment to ignore if you decide not to commit)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+### VS Code settings (keep shared settings committed if added intentionally)
+.vscode/*
+!/.vscode/extensions.json
+!/.vscode/settings.json
+
+### Ignore compiled JS maps if desired (uncomment if noisy)
+# out/**/*.js.map
+
+### Mac specific
+.AppleDouble
+.LSOverride
+
+### Archive / dumps
+*.tgz
+*.tar.gz
+*.zip
