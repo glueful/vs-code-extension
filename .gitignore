@@ -1,5 +1,5 @@
 ### Node dependencies
-node_modules/
+/node_modules/
 
 ### TypeScript build output
 out/
@@ -50,11 +50,6 @@ temp/
 # package-lock.json
 # yarn.lock
 # pnpm-lock.yaml
-
-### VS Code settings (keep shared settings committed if added intentionally)
-.vscode/*
-!/.vscode/extensions.json
-!/.vscode/settings.json
 
 ### Ignore compiled JS maps if desired (uncomment if noisy)
 # out/**/*.js.map

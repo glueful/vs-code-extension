@@ -1,0 +1,277 @@
+/* Debug Panel Styles */
+.debug-container {
+    font-family: monospace;
+    background: #1a1a1a;
+    color: #d4d4d4;
+    min-height: 100vh;
+}
+
+.debug-tabs {
+    display: flex;
+    background: #2d2d30;
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+    margin-bottom: 0;
+}
+
+.debug-tab {
+    padding: 15px 20px;
+    cursor: pointer;
+    border: none;
+    background: #2d2d30;
+    color: #cccccc;
+    transition: background 0.2s;
+    font-size: 14px;
+}
+
+.debug-tab:hover {
+    background: #3e3e42;
+}
+
+.debug-tab.active {
+    background: #007acc;
+    color: white;
+}
+
+.debug-content {
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 0 0 8px 8px;
+    border: 1px solid #3e3e42;
+    border-top: none;
+    min-height: 400px;
+}
+
+.debug-section {
+    display: none;
+    margin-bottom: 20px;
+}
+
+.debug-section.active {
+    display: block;
+}
+
+.debug-section h3 {
+    margin-top: 0;
+    color: #d4d4d4;
+    border-bottom: 1px solid #3e3e42;
+    padding-bottom: 10px;
+}
+
+.session-card,
+.breakpoint-card,
+.query-card {
+    background: #252526;
+    border: 1px solid #3e3e42;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 10px;
+}
+
+.session-header,
+.breakpoint-header,
+.query-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.breakpoint-actions,
+.session-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.status-active { color: #4ec9b0; }
+.status-paused { color: #dcdcaa; }
+.status-stopped { color: #f48771; }
+
+.code {
+    background: #1e1e1e;
+    border: 1px solid #3e3e42;
+    border-radius: 4px;
+    padding: 10px;
+    font-family: 'Courier New', monospace;
+    overflow-x: auto;
+    margin: 8px 0;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.metric {
+    display: inline-block;
+    background: #0e639c;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-right: 10px;
+    font-size: 0.9em;
+}
+
+.query-metrics {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.query-bindings {
+    margin-top: 8px;
+    font-size: 0.9em;
+    color: #9cdcfe;
+    font-family: monospace;
+}
+
+.section-actions {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    background: #0e639c;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
+    font-size: 13px;
+    transition: background 0.2s;
+}
+
+.btn:hover {
+    background: #1177bb;
+}
+
+.btn-danger {
+    background: #f14c4c;
+}
+
+.btn-danger:hover {
+    background: #ff6b6b;
+}
+
+.btn:disabled {
+    background: #666;
+    cursor: not-allowed;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background: #1e1e1e;
+}
+
+.table th,
+.table td {
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid #3e3e42;
+}
+
+.table th {
+    background: #2d2d30;
+    font-weight: bold;
+    color: #d4d4d4;
+}
+
+.table td {
+    color: #cccccc;
+    font-family: monospace;
+    font-size: 13px;
+}
+
+.slow-query {
+    border-left: 3px solid #f14c4c;
+}
+
+.normal-query {
+    border-left: 3px solid #4ec9b0;
+}
+
+/* Dark theme overrides */
+.container {
+    background: #1a1a1a;
+    color: #d4d4d4;
+}
+
+.webview-header {
+    background: #252526;
+    border-left: 4px solid #007acc;
+}
+
+.webview-header h1 {
+    color: #d4d4d4;
+}
+
+.action-bar .btn {
+    margin: 0 5px 5px 0;
+}
+
+.security-indicator {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.status-good {
+    color: #4ec9b0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .debug-tabs {
+        flex-wrap: wrap;
+    }
+
+    .debug-tab {
+        flex: 1;
+        min-width: 120px;
+        text-align: center;
+    }
+
+    .session-header,
+    .breakpoint-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .breakpoint-actions,
+    .session-actions {
+        align-self: stretch;
+    }
+
+    .table {
+        font-size: 12px;
+    }
+
+    .table th,
+    .table td {
+        padding: 6px 8px;
+    }
+}
+
+/* Accessibility */
+.debug-tab:focus,
+.btn:focus {
+    outline: 2px solid #007acc;
+    outline-offset: 2px;
+}
+
+.debug-tab[aria-selected="true"] {
+    background: #007acc;
+    color: white;
+}
+
+/* Animation for tab switching */
+.debug-section {
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.debug-section.active {
+    opacity: 1;
+}

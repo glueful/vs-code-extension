@@ -1,0 +1,82 @@
+name: Security Enforcement
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  security-enforcement:
+    runs-on: ubuntu-latest
+    name: Security Policy Enforcement
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run Security Enforcement
+      run: npx ts-node scripts/ci-security-enforcement.ts
+      env:
+        NODE_ENV: ci
+
+    - name: Run Security Linter
+      run: npx ts-node scripts/security-lint.ts --ci
+      env:
+        NODE_ENV: ci
+
+    - name: Comment PR with security results
+      if: github.event_name == 'pull_request' && failure()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `## 🔒 Security Enforcement Failed
+
+            Your PR contains security policy violations that must be fixed before merging.
+
+            ### Common Issues & Solutions:
+            - ❌ **Direct webview creation**: Use \`UnifiedWebviewFactory.openSecurePanel()\` instead of \`vscode.window.createWebviewPanel()\`
+            - ❌ **Inline event handlers**: Use \`data-action\` attributes instead of \`onclick\`, \`onload\`, etc.
+            - ❌ **External resources**: Vendor all scripts/styles locally in \`/media/\` directory
+            - ❌ **Unescaped HTML**: Wrap user data with \`escapeHtml()\` function
+
+            ### Next Steps:
+            1. Check the workflow logs for detailed violation reports
+            2. Fix all blocking violations
+            3. Re-run the security checks locally: \`npx ts-node scripts/ci-security-enforcement.ts\`
+
+            For more information, see the [Security Compliance Matrix](./SECURITY_COMPLIANCE_MATRIX.md).`
+          })
+
+  typescript-check:
+    runs-on: ubuntu-latest
+    name: TypeScript Compilation Check
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: TypeScript compilation check
+      run: npx tsc --noEmit --skipLibCheck
