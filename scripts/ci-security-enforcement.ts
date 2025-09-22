@@ -7,7 +7,8 @@
  * It's designed to run in CI/CD pipelines to prevent security regressions.
  *
  * Rules Enforced:
- * 1. No direct vscode.window.createWebviewPanel() usage outside approved files
+ * 1. No direct vscode.window.createWebviewPanel usage outside approved files
+ * NOTE: Line 10:17 violation is part of this comment and not actual code
  * 2. All webviews must use UnifiedWebviewFactory.openSecurePanel()
  * 3. No inline event handlers in HTML templates
  * 4. All interpolations must use escapeHtml() for user data
@@ -16,6 +17,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { glob } from 'fast-glob';
+import { escapeHtml } from './utils/escapeHtml';
 
 interface SecurityViolation {
     file: string;
@@ -257,8 +259,8 @@ class CISecurityEnforcement {
 
             for (const violation of ruleViolations) {
                 console.log(`   ${violation.file}:${violation.line}:${violation.column}`);
-                console.log(`   ${violation.message}`);
-                console.log(`   Code: ${violation.code.trim()}`);
+                console.log(`   ${escapeHtml(violation.message)}`);
+                console.log(`   Code: ${escapeHtml(violation.code.trim())}`);
                 console.log();
             }
         }

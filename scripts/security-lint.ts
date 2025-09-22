@@ -3,6 +3,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 const fastGlob = require('fast-glob');
+import { escapeHtml } from './utils/escapeHtml';
 
 interface SecurityViolation {
     file: string;
@@ -141,7 +142,7 @@ class SecurityLint {
         console.log(`🔍 Scanning ${files.length} files for security violations...`);
 
         for (let i = 0; i < files.length; i++) {
-            console.log(`Scanning ${i + 1}/${files.length}: ${path.basename(files[i])}`);
+            console.log(`Scanning ${i + 1}/${files.length}: ${escapeHtml(path.basename(files[i]))}`);
             await this.scanFile(files[i]);
         }
 
@@ -216,7 +217,7 @@ class SecurityLint {
         }
 
         if (iterations >= maxIterations) {
-            console.warn(`⚠️  Rule ${rule.name} hit iteration limit in ${filePath}`);
+            console.warn(`⚠️  Rule ${escapeHtml(rule.name)} hit iteration limit in ${escapeHtml(filePath)}`);
         }
     }
 
@@ -274,8 +275,8 @@ class SecurityLint {
 
             for (const violation of violationsOfSeverity) {
                 console.log(`  ${violation.file}:${violation.line}:${violation.column}`);
-                console.log(`    ${violation.message}`);
-                console.log(`    Code: ${violation.code.trim()}`);
+                console.log(`    ${escapeHtml(violation.message)}`);
+                console.log(`    Code: ${escapeHtml(violation.code.trim())}`);
                 console.log();
             }
         }
@@ -317,7 +318,7 @@ if (require.main === module) {
         }
 
         if (violations.length > 0) {
-            console.log(`\n⚠️  Found ${violations.length} security issues. ${shouldFail ? 'Critical issues must be fixed.' : 'Review recommended.'}`);
+            console.log(`\n⚠️  Found ${violations.length} security issues. ${escapeHtml(shouldFail ? 'Critical issues must be fixed.' : 'Review recommended.')}`);
         } else {
             console.log('\n🎉 Security scan passed!');
         }

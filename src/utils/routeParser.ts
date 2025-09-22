@@ -1,3 +1,5 @@
+import { escapeHtml } from './webviewSecurity';
+
 export interface ParsedRoute {
     method: string;
     path: string;
@@ -384,7 +386,7 @@ export class RobustRouteParser {
         const classMatch = content.match(/class\s+(\w+)/);
 
         if (namespaceMatch && classMatch) {
-            return `${namespaceMatch[1]}\\${classMatch[1]}`;
+            return `${escapeHtml(namespaceMatch[1])}\\${classMatch[1]}`;
         } else if (classMatch) {
             return classMatch[1];
         } else {

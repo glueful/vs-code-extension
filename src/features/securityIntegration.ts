@@ -209,7 +209,7 @@ export class SecurityIntegrationProvider {
                     result.line - 1,
                     result.column + 10
                 ),
-                `[${result.rule}] ${result.message}`,
+                `[${escapeHtml(result.rule)}] ${escapeHtml(result.message)}`,
                 result.severity === 'error'
                     ? vscode.DiagnosticSeverity.Error
                     : result.severity === 'warning'

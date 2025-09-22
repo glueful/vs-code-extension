@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
+import { escapeHtml } from '../utils/webviewSecurity';
 
 interface TestSuite {
   name: string;
@@ -102,7 +103,7 @@ async function findTestFiles(pattern?: string): Promise<string[]> {
 
 async function runSpecificTest(testFile: string): Promise<void> {
   const task = makePhpUnitTask(
-    `Test: ${path.basename(testFile)}`,
+    `Test: ${escapeHtml(path.basename(testFile))}`,
     testFile,
     vscode.TaskGroup.Test
   );
@@ -111,7 +112,7 @@ async function runSpecificTest(testFile: string): Promise<void> {
 
 async function runTestMethod(testFile: string, methodName: string): Promise<void> {
   const task = makePhpUnitTask(
-    `Test: ${path.basename(testFile)}::${methodName}`,
+    `Test: ${escapeHtml(path.basename(testFile))}::${escapeHtml(methodName)}`,
     `${testFile} --filter ${methodName}`,
     vscode.TaskGroup.Test
   );

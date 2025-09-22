@@ -2,6 +2,7 @@
 import * as vscode from 'vscode';
 import { getCliParts } from '../utils/cli';
 import { getWorkspaceFolder } from '../utils/workspace';
+import { escapeHtml } from '../utils/webviewSecurity';
 
 function makeTask(name: string, subcommand: string): vscode.Task {
   const def: any = { type: 'glueful', command: subcommand };
@@ -130,14 +131,14 @@ async function runCommandWithInput(command: string): Promise<void> {
       placeHolder: 'UserController'
     });
     if (!name) return;
-    fullCommand = `${command} ${name}`;
+    fullCommand = `${command} ${escapeHtml(name)}`;
   } else if (command === 'migrate:create') {
     const name = await vscode.window.showInputBox({
       prompt: 'Enter migration name (e.g., create_users_table)',
       placeHolder: 'create_users_table'
     });
     if (!name) return;
-    fullCommand = `${command} ${name}`;
+    fullCommand = `${command} ${escapeHtml(name)}`;
   } else if (command === 'cache:get' || command === 'cache:delete') {
     const key = await vscode.window.showInputBox({
       prompt: 'Enter cache key',

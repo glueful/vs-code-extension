@@ -2,6 +2,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { escapeHtml } from './utils/escapeHtml';
 
 interface WebviewVulnerability {
     file: string;
@@ -44,7 +45,7 @@ function fixWebviewSecurity(filePath: string): void {
         (match, viewType, title, showOptions) => {
             return `SecureWebviewManager.getInstance().createSecureWebview({\n` +
                 `            viewType: '${viewType}',\n` +
-                `            title: '${title}',\n` +
+                `            title: '${escapeHtml(title)}',\n` +
                 `            showOptions: ${showOptions}\n` +
                 `        }, content, this.context)`;
         }
@@ -86,7 +87,7 @@ function fixWebviewSecurity(filePath: string): void {
                  expression.includes('sql') ||
                  expression.includes('route') ||
                  expression.includes('method'))) {
-                return `\${escapeHtml(${expression})}`;
+                return `\${escapeHtml(${escapeHtml(expression)})}`;
             }
 
             return match;

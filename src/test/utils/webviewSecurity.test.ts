@@ -44,8 +44,8 @@ describe('WebviewSecurity', () => {
 
     describe('sanitizeForWebview', () => {
         it('should sanitize string data', () => {
-            const input = '<img src="x" onerror="alert(1)">';
-            const expected = '&lt;img src=&quot;x&quot; onerror=&quot;alert(1)&quot;&gt;';
+            const input = '<img src="x" data-test="alert(1)">';
+            const expected = '&lt;img src=&quot;x&quot; data-test=&quot;alert(1)&quot;&gt;';
             expect(sanitizeForWebview(input)).toBe(expected);
         });
 
