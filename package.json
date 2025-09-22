@@ -38,7 +38,26 @@
     "url": "https://github.com/glueful/vs-code-extension/issues"
   },
   "activationEvents": [
-    "onLanguage:php"
+    "onLanguage:php",
+    "onCommand:glueful.performance.start",
+    "onCommand:glueful.performance.stop",
+    "onCommand:glueful.performance.showDashboard",
+    "onCommand:glueful.performance.analyzeQueries",
+    "onCommand:glueful.performance.memoryProfile",
+    "onCommand:glueful.performance.cacheAnalysis",
+    "onCommand:glueful.security.showReport",
+    "onCommand:glueful.security.fixSecurityIssue",
+    "onCommand:glueful.security.showPolicies",
+    "onCommand:glueful.security.auditLogs",
+    "onCommand:glueful.docs.cookbook",
+    "onCommand:glueful.docs.tutorials",
+    "onCommand:glueful.docs.quickHelp",
+    "onCommand:glueful.docs.contextHelp",
+    "onCommand:glueful.docs.refresh",
+    "onCommand:glueful.debug.startProfiling",
+    "onCommand:glueful.debug.stopProfiling",
+    "onCommand:glueful.test.runMethod",
+    "onCommand:glueful.test.debugMethod"
   ],
   "contributes": {
     "views": {

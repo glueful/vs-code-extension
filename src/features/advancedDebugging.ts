@@ -719,17 +719,17 @@ export class AdvancedDebuggingProvider {
                 </div>
 
                 ${recentQueries.length === 0 ? '<p>No query data available</p>' :
-                    recentQueries.slice().reverse().map(query => `
-                        <div class="query-card ${query.duration > 1000 ? 'slow-query' : 'normal-query'}">
+                    recentQueries.slice().reverse().map(q => `
+                        <div class="query-card ${q.duration > 1000 ? 'slow-query' : 'normal-query'}">
                             <div class="query-header">
                                 <div class="query-metrics">
-                                    <span class="metric">${escapeHtml(query.duration.toFixed(2))}ms</span>
-                                    <span class="metric">${escapeHtml(query.timestamp.toLocaleTimeString())}</span>
-                                    ${query.bindings.length > 0 ? `<span class="metric">${query.bindings.length} bindings</span>` : ''}
+                                    <span class="metric">${escapeHtml(q.duration.toFixed(2))}ms</span>
+                                    <span class="metric">${escapeHtml(q.timestamp.toLocaleTimeString())}</span>
+                                    ${q.bindings.length > 0 ? `<span class="metric">${q.bindings.length} bindings</span>` : ''}
                                 </div>
                             </div>
-                            <div class="code">${escapeHtml(query.query)}</div>
-                            ${query.bindings.length > 0 ? `<div class="query-bindings">Bindings: ${escapeHtml(JSON.stringify(query.bindings))}</div>` : ''}
+                            <div class="code">${escapeHtml(q.query)}</div>
+                            ${q.bindings.length > 0 ? `<div class="query-bindings">Bindings: ${escapeHtml(JSON.stringify(q.bindings))}</div>` : ''}
                         </div>
                     `).join('')
                 }

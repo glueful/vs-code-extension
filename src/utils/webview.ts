@@ -84,15 +84,47 @@ export function generateSecureHtml(content: string): string {
         // VS Code API setup
         const vscode = acquireVsCodeApi();
 
-        // Safe message posting
+        // Safe message posting (standard envelope)
         function postMessage(command, data = {}) {
-            vscode.postMessage({ command, ...data });
+            vscode.postMessage({ type: 'cmd', id: command, payload: data });
         }
 
         // Error boundary
         window.addEventListener('error', (e) => {
             console.error('Webview error:', e.error);
-            postMessage('error', { message: e.error?.message || 'Unknown error' });
+            vscode.postMessage({ type: 'error', message: e.error?.message || 'Unknown error' });
+        });
+
+        // Bridge: click handler for [data-cmd]
+        document.addEventListener('click', (e) => {
+            const target = e.target.closest('[data-cmd]');
+            if (!target) return;
+            e.preventDefault();
+            e.stopPropagation();
+            const command = target.dataset.cmd;
+            let args = {};
+            try { args = target.dataset.args ? JSON.parse(target.dataset.args) : {}; } catch {}
+            vscode.postMessage({ type: 'cmd', id: command, payload: args });
+        });
+
+        // Bridge: form submit handler with data-cmd
+        document.addEventListener('submit', (e) => {
+            const form = e.target;
+            if (!form || !form.dataset || !form.dataset.cmd) return;
+            e.preventDefault();
+            const formData = new FormData(form);
+            const payload = Object.fromEntries(formData.entries());
+            vscode.postMessage({ type: 'cmd', id: form.dataset.cmd, payload });
+        });
+
+        // Bridge: input change handler (debounced) for data-cmd
+        document.addEventListener('input', (e) => {
+            const input = e.target;
+            if (!input || !input.dataset || !input.dataset.cmd) return;
+            clearTimeout(input._updateTimer);
+            input._updateTimer = setTimeout(() => {
+                vscode.postMessage({ type: 'cmd', id: input.dataset.cmd, payload: { value: input.value, name: input.name } });
+            }, 300);
         });
     </script>
 </body>

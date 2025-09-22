@@ -200,6 +200,7 @@ export class UnifiedWebviewFactory {
     private generateSecureContent(template: WebviewTemplate): string {
         const actions = template.actions || [];
         const metadata = template.metadata || {};
+        const trustedMarkup = template.content;
 
         return `
             <div class="container">
@@ -210,7 +211,7 @@ export class UnifiedWebviewFactory {
                             ${actions.map(action => `
                                 <button class="btn ${action.primary ? 'btn-primary' : 'btn-secondary'}"
                                         ${!action.enabled ? 'disabled' : ''}
-                                        data-action="${escapeHtml(action.id)}">
+                                        data-cmd="${escapeHtml(action.id)}">
                                     ${action.icon ? `<span class="icon">${escapeHtml(action.icon)}</span>` : ''}
                                     ${escapeHtml(action.label)}
                                 </button>
@@ -220,7 +221,7 @@ export class UnifiedWebviewFactory {
                 </header>
 
                 <main class="webview-content">
-                    ${escapeHtml(template.content)}
+                    ${trustedMarkup}
                 </main>
 
                 ${Object.keys(metadata).length > 0 ? `
