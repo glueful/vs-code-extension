@@ -200,6 +200,7 @@ export class UnifiedWebviewFactory {
     private generateSecureContent(template: WebviewTemplate): string {
         const actions = template.actions || [];
         const metadata = template.metadata || {};
+        const trustedMarkup = template.content;
 
         return `
             <div class="container">
@@ -220,7 +221,7 @@ export class UnifiedWebviewFactory {
                 </header>
 
                 <main class="webview-content">
-                    ${template.content}
+                    ${trustedMarkup}
                 </main>
 
                 ${Object.keys(metadata).length > 0 ? `
