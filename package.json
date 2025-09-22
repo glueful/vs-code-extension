@@ -1,0 +1,518 @@
+{
+  "name": "glueful-framework-tools",
+  "displayName": "Glueful Framework Tools",
+  "description": "Comprehensive development tools for the Glueful PHP framework: routes management, performance monitoring, security scanning, container analysis, and advanced debugging.",
+  "publisher": "glueful",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.93.0"
+  },
+  "categories": [
+    "Extension Packs",
+    "Debuggers",
+    "Linters",
+    "Other"
+  ],
+  "keywords": [
+    "glueful",
+    "php",
+    "framework",
+    "routes",
+    "dependency injection",
+    "performance",
+    "security",
+    "debugging",
+    "monitoring"
+  ],
+  "icon": "media/glueful-icon.png",
+  "galleryBanner": {
+    "color": "#1e293b",
+    "theme": "dark"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/glueful/vscode-extension.git"
+  },
+  "homepage": "https://glueful.com",
+  "bugs": {
+    "url": "https://github.com/glueful/vscode-extension/issues"
+  },
+  "activationEvents": [
+    "onLanguage:php"
+  ],
+  "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "id": "glueful.routes",
+          "name": "Glueful Routes",
+          "icon": "$(symbol-method)"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "glueful.refreshRoutes",
+        "title": "Glueful: Refresh Routes"
+      },
+      {
+        "command": "glueful.routesPanel",
+        "title": "Glueful: Routes Panel"
+      },
+      {
+        "command": "glueful.showRoutesForMethod",
+        "title": "Glueful: Show Routes for Method"
+      },
+      {
+        "command": "glueful.createMethod",
+        "title": "Glueful: Create Controller Method"
+      },
+      {
+        "command": "glueful.newRoute",
+        "title": "Glueful: Add Route"
+      },
+      {
+        "command": "glueful.runTask",
+        "title": "Glueful: Run Task"
+      },
+      {
+        "command": "glueful.dashboard",
+        "title": "Glueful: Show Dashboard"
+      },
+      {
+        "command": "glueful.container.showStatus",
+        "title": "Glueful: Container Status"
+      },
+      {
+        "command": "glueful.container.validate",
+        "title": "Glueful: Validate Container"
+      },
+      {
+        "command": "glueful.container.dependencyGraph",
+        "title": "Glueful: Show Dependency Graph"
+      },
+      {
+        "command": "glueful.performance.dashboard",
+        "title": "Glueful: Performance Dashboard"
+      },
+      {
+        "command": "glueful.performance.check",
+        "title": "Glueful: Performance Check"
+      },
+      {
+        "command": "glueful.security.dashboard",
+        "title": "Glueful: Security Report"
+      },
+      {
+        "command": "glueful.security.quickCheck",
+        "title": "Glueful: Security Quick Check"
+      },
+      {
+        "command": "glueful.security.scan",
+        "title": "Glueful: Security Scan"
+      },
+      {
+        "command": "glueful.docs.help",
+        "title": "Glueful: Documentation Help"
+      },
+      {
+        "command": "glueful.docs.search",
+        "title": "Glueful: Search Documentation"
+      },
+      {
+        "command": "glueful.docs.browse",
+        "title": "Glueful: Browse Documentation"
+      },
+      {
+        "command": "glueful.migrate.run",
+        "title": "Glueful: migrate:run"
+      },
+      {
+        "command": "glueful.migrate.create",
+        "title": "Glueful: migrate:create"
+      },
+      {
+        "command": "glueful.migrate.status",
+        "title": "Glueful: migrate:status"
+      },
+      {
+        "command": "glueful.migrate.rollback",
+        "title": "Glueful: migrate:rollback"
+      },
+      {
+        "command": "glueful.serve",
+        "title": "Glueful: serve"
+      },
+      {
+        "command": "glueful.version",
+        "title": "Glueful: version"
+      },
+      {
+        "command": "glueful.cache.clear",
+        "title": "Glueful: cache:clear"
+      },
+      {
+        "command": "glueful.cache.status",
+        "title": "Glueful: cache:status"
+      },
+      {
+        "command": "glueful.cache.get",
+        "title": "Glueful: cache:get"
+      },
+      {
+        "command": "glueful.cache.set",
+        "title": "Glueful: cache:set"
+      },
+      {
+        "command": "glueful.cache.delete",
+        "title": "Glueful: cache:delete"
+      },
+      {
+        "command": "glueful.cache.ttl",
+        "title": "Glueful: cache:ttl"
+      },
+      {
+        "command": "glueful.cache.expire",
+        "title": "Glueful: cache:expire"
+      },
+      {
+        "command": "glueful.cache.purge",
+        "title": "Glueful: cache:purge"
+      },
+      {
+        "command": "glueful.database.status",
+        "title": "Glueful: database:status"
+      },
+      {
+        "command": "glueful.database.reset",
+        "title": "Glueful: database:reset"
+      },
+      {
+        "command": "glueful.database.profile",
+        "title": "Glueful: database:profile"
+      },
+      {
+        "command": "glueful.generate.controller",
+        "title": "Glueful: generate:controller"
+      },
+      {
+        "command": "glueful.generate.apiDefinitions",
+        "title": "Glueful: generate:api-definitions"
+      },
+      {
+        "command": "glueful.generate.key",
+        "title": "Glueful: generate:key"
+      },
+      {
+        "command": "glueful.extensions.info",
+        "title": "Glueful: extensions:info"
+      },
+      {
+        "command": "glueful.extensions.enable",
+        "title": "Glueful: extensions:enable"
+      },
+      {
+        "command": "glueful.extensions.disable",
+        "title": "Glueful: extensions:disable"
+      },
+      {
+        "command": "glueful.extensions.create",
+        "title": "Glueful: extensions:create"
+      },
+      {
+        "command": "glueful.extensions.list",
+        "title": "Glueful: extensions:list"
+      },
+      {
+        "command": "glueful.extensions.summary",
+        "title": "Glueful: extensions:summary"
+      },
+      {
+        "command": "glueful.extensions.cache",
+        "title": "Glueful: extensions:cache"
+      },
+      {
+        "command": "glueful.extensions.clear",
+        "title": "Glueful: extensions:clear"
+      },
+      {
+        "command": "glueful.extensions.why",
+        "title": "Glueful: extensions:why"
+      },
+      {
+        "command": "glueful.install",
+        "title": "Glueful: install"
+      },
+      {
+        "command": "glueful.system.check",
+        "title": "Glueful: system:check"
+      },
+      {
+        "command": "glueful.system.production",
+        "title": "Glueful: system:production"
+      },
+      {
+        "command": "glueful.system.memoryMonitor",
+        "title": "Glueful: system:memory-monitor"
+      },
+      {
+        "command": "glueful.security.check",
+        "title": "Glueful: security:check"
+      },
+      {
+        "command": "glueful.security.vulnerabilityCheck",
+        "title": "Glueful: security:vulnerability-check"
+      },
+      {
+        "command": "glueful.security.lockdown",
+        "title": "Glueful: security:lockdown"
+      },
+      {
+        "command": "glueful.security.resetPassword",
+        "title": "Glueful: security:reset-password"
+      },
+      {
+        "command": "glueful.security.report",
+        "title": "Glueful: security:report"
+      },
+      {
+        "command": "glueful.security.revokeTokens",
+        "title": "Glueful: security:revoke-tokens"
+      },
+      {
+        "command": "glueful.security.scan",
+        "title": "Glueful: security:scan"
+      },
+      {
+        "command": "glueful.notifications.processRetries",
+        "title": "Glueful: notifications:process-retries"
+      },
+      {
+        "command": "glueful.queue.work",
+        "title": "Glueful: queue:work"
+      },
+      {
+        "command": "glueful.queue.autoScale",
+        "title": "Glueful: queue:auto-scale"
+      },
+      {
+        "command": "glueful.queue.scheduler",
+        "title": "Glueful: queue:scheduler"
+      },
+      {
+        "command": "glueful.archive.manage",
+        "title": "Glueful: archive:manage"
+      },
+      {
+        "command": "glueful.container.debug",
+        "title": "Glueful: container:debug"
+      },
+      {
+        "command": "glueful.container.compile",
+        "title": "Glueful: container:compile"
+      },
+      {
+        "command": "glueful.container.validate",
+        "title": "Glueful: container:validate"
+      },
+      {
+        "command": "glueful.container.lazyStatus",
+        "title": "Glueful: container:lazy-status"
+      },
+      {
+        "command": "glueful.fields.analyze",
+        "title": "Glueful: fields:analyze"
+      },
+      {
+        "command": "glueful.fields.validate",
+        "title": "Glueful: fields:validate"
+      },
+      {
+        "command": "glueful.fields.performance",
+        "title": "Glueful: fields:performance"
+      },
+      {
+        "command": "glueful.fields.whitelistCheck",
+        "title": "Glueful: fields:whitelist-check"
+      },
+      {
+        "command": "glueful.test",
+        "title": "Glueful: test"
+      },
+      {
+        "command": "glueful.test.unit",
+        "title": "Glueful: test:unit"
+      },
+      {
+        "command": "glueful.test.integration",
+        "title": "Glueful: test:integration"
+      },
+      {
+        "command": "glueful.test.coverage",
+        "title": "Glueful: test:coverage"
+      },
+      {
+        "command": "glueful.analyze",
+        "title": "Glueful: analyze (PHPStan)"
+      },
+      {
+        "command": "glueful.format",
+        "title": "Glueful: format (PHP-CS-Fixer)"
+      },
+      {
+        "command": "glueful.test.run",
+        "title": "Glueful: Run Tests"
+      },
+      {
+        "command": "glueful.test.file",
+        "title": "Glueful: Run Test File"
+      },
+      {
+        "command": "glueful.test.method",
+        "title": "Glueful: Run Test Method"
+      },
+      {
+        "command": "glueful.test.coverage",
+        "title": "Glueful: Generate Coverage Report"
+      },
+      {
+        "command": "glueful.test.refreshDatabase",
+        "title": "Glueful: Refresh Test Database"
+      },
+      {
+        "command": "glueful.monitoring.start",
+        "title": "Glueful: Start Real-time Monitoring"
+      },
+      {
+        "command": "glueful.monitoring.stop",
+        "title": "Glueful: Stop Real-time Monitoring"
+      },
+      {
+        "command": "glueful.monitoring.dashboard",
+        "title": "Glueful: Real-time Monitoring Dashboard"
+      },
+      {
+        "command": "glueful.extensions.dashboard",
+        "title": "Glueful: Extensions Dashboard"
+      },
+      {
+        "command": "glueful.extensions.enable",
+        "title": "Glueful: Enable Extension"
+      },
+      {
+        "command": "glueful.extensions.disable",
+        "title": "Glueful: Disable Extension"
+      },
+      {
+        "command": "glueful.extensions.create",
+        "title": "Glueful: Create New Extension"
+      },
+      {
+        "command": "glueful.debug.panel",
+        "title": "Glueful: Advanced Debug Panel"
+      },
+      {
+        "command": "glueful.debug.addBreakpoint",
+        "title": "Glueful: Add Debug Breakpoint"
+      },
+      {
+        "command": "glueful.debug.clearBreakpoints",
+        "title": "Glueful: Clear All Breakpoints"
+      },
+      {
+        "command": "glueful.debug.analyzeQueries",
+        "title": "Glueful: Analyze Database Queries"
+      },
+      {
+        "command": "glueful.debug.analyzeMemory",
+        "title": "Glueful: Analyze Memory Usage"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "glueful.routesPanel",
+          "when": "explorerResourceIsFolder",
+          "group": "glueful"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "glueful.refreshRoutes",
+          "when": "view == glueful.routes",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "glueful.routesPanel",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
+          "command": "glueful.dashboard",
+          "when": "workspaceFolderCount > 0"
+        }
+      ]
+    },
+    "snippets": [
+      {
+        "language": "php",
+        "path": "./snippets/php.json"
+      }
+    ],
+    "configuration": {
+      "title": "Glueful",
+      "properties": {
+        "glueful.cliPath": {
+          "type": "string",
+          "default": "php vendor/bin/glueful",
+          "description": "Command to run the Glueful CLI (e.g., `php vendor/bin/glueful` or `vendor/bin/glueful`)."
+        }
+      }
+    },
+    "taskDefinitions": [
+      {
+        "type": "glueful",
+        "required": [
+          "command"
+        ],
+        "properties": {
+          "command": {
+            "type": "string",
+            "description": "Glueful CLI subcommand (e.g., `cache:build`, `routes:list`, `test`)."
+          }
+        }
+      }
+    ]
+  },
+  "main": "./out/extension.js",
+  "scripts": {
+    "compile": "tsc -p .",
+    "watch": "tsc -w -p .",
+    "package": "vsce package || echo 'Install vsce to package: npm i -g @vscode/vsce'",
+    "lint": "eslint 'src/**/*.{ts,tsx}' --max-warnings=0",
+    "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "icons:generate": "node scripts/generate-icons.mjs",
+    "security:enforce": "npx ts-node scripts/ci-security-enforcement.ts",
+    "security:scan": "npx ts-node scripts/security-lint.ts",
+    "security:full": "npm run security:enforce && npm run security:scan",
+    "precommit": "npm run security:enforce && npm run lint && npm run compile"
+  },
+  "dependencies": {
+    "fast-glob": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.4",
+    "@types/vscode": "^1.93.0",
+    "typescript": "^5.5.4",
+    "eslint": "^9.9.0",
+    "@typescript-eslint/parser": "^8.5.0",
+    "@typescript-eslint/eslint-plugin": "^8.5.0",
+    "prettier": "^3.3.3",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1"
+    ,"sharp": "^0.33.4"
+  }
+}
