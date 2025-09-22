@@ -31,11 +31,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/glueful/vscode-extension.git"
+    "url": "https://github.com/glueful/vs-code-extension.git"
   },
   "homepage": "https://glueful.com",
   "bugs": {
-    "url": "https://github.com/glueful/vscode-extension/issues"
+    "url": "https://github.com/glueful/vs-code-extension/issues"
   },
   "activationEvents": [
     "onLanguage:php"
