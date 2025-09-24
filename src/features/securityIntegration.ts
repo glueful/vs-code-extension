@@ -370,7 +370,7 @@ export class SecurityIntegrationProvider {
                         <h4>[${escapeHtml(issue.rule)}] ${escapeHtml(issue.message)}</h4>
                         <p><strong>File:</strong> ${escapeHtml(issue.file)}:${issue.line}</p>
                         <p><strong>Type:</strong> ${escapeHtml(issue.type)}</p>
-                        ${issue.fix ? `<button class="btn" data-action="fixIssue" data-file="${escapeHtml(issue.file)}" data-line="${issue.line}" data-fix="${escapeHtml(issue.fix)}">Auto Fix</button>` : ''}
+                        ${issue.fix ? `<button class="btn" data-cmd="fixIssue" data-file="${escapeHtml(issue.file)}" data-line="${issue.line}" data-fix="${escapeHtml(issue.fix)}">Auto Fix</button>` : ''}
                     </div>
                 `).join('')}
 

@@ -15,7 +15,9 @@ function makeTask(name: string, subcommand: string): vscode.Task {
 
   // Use ProcessExecution for better Windows compatibility and security
   const { cmd, args } = getCliParts();
-  const allArgs = [...args, subcommand];
+  // Tokenize subcommand into args safely (split by whitespace keeping quoted segments)
+  const tokens = (subcommand.match(/(?:[^\s\"]+|\"[^\"]*\")+/g) || []).map(t => t.replace(/^\"|\"$/g, ''));
+  const allArgs = [...args, ...tokens];
 
   // Use ProcessExecution instead of ShellExecution for better security and Windows support
   const exec = new vscode.ProcessExecution(cmd, allArgs, {

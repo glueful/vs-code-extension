@@ -182,10 +182,13 @@ export class SecurityConfigManager {
     }
 
     getVulnerabilitySeverity(vulnerability: string): string {
-        const vulnLower = vulnerability.toLowerCase();
+        // Normalize common variants and spacing
+        let norm = vulnerability.toLowerCase().trim();
+        norm = norm.replace(/\s+/g, '-'); // spaces -> dashes (e.g., "information disclosure")
+        norm = norm.replace(/cross[- ]?site[- ]?scripting/g, 'xss'); // map to xss
 
         for (const [severity, vulns] of Object.entries(this.config.vulnerabilities)) {
-            if (vulns.some(v => vulnLower.includes(v))) {
+            if (vulns.some(v => norm.includes(v))) {
                 return severity;
             }
         }

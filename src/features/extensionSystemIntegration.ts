@@ -422,30 +422,6 @@ export class ExtensionSystemIntegrationProvider {
                 ${this.generateExtensionStats(enabled, disabled, extensions)}
                 ${this.generateExtensionsGrid(extensions)}
             </div>
-
-            <script>
-                // Secure event delegation for extension actions
-                document.addEventListener('click', (event) => {
-                    const target = event.target.closest('[data-action]');
-                    if (!target) return;
-
-                    const action = target.dataset.action;
-                    const payload = {};
-
-                    // Collect all data attributes for the payload
-                    for (const [key, value] of Object.entries(target.dataset)) {
-                        if (key !== 'action') {
-                            payload[key] = value;
-                        }
-                    }
-
-                    // Send message to VS Code
-                    window.postMessage({
-                        command: action,
-                        payload
-                    }, '*');
-                });
-            </script>
         `;
     }
 
@@ -473,7 +449,7 @@ export class ExtensionSystemIntegrationProvider {
             return `
                 <div class="no-extensions">
                     <p>No extensions found</p>
-                    <button class="btn btn-primary" data-action="createExtension">
+                    <button class="btn btn-primary" data-cmd="createExtension">
                         Create Your First Extension
                     </button>
                 </div>
@@ -507,23 +483,23 @@ export class ExtensionSystemIntegrationProvider {
                 <div class="extension-actions">
                     ${ext.enabled
                         ? `<button class="btn btn-secondary"
-                                  data-action="disableExtension"
+                                  data-cmd="disableExtension"
                                   data-name="${escapeHtml(ext.name)}">
                               Disable
                            </button>`
                         : `<button class="btn btn-success"
-                                  data-action="enableExtension"
+                                  data-cmd="enableExtension"
                                   data-name="${escapeHtml(ext.name)}">
                               Enable
                            </button>`
                     }
                     <button class="btn btn-primary"
-                            data-action="viewExtension"
+                            data-cmd="viewExtension"
                             data-name="${escapeHtml(ext.name)}">
                         View Details
                     </button>
                     <button class="btn btn-info"
-                            data-action="configureExtension"
+                            data-cmd="configureExtension"
                             data-name="${escapeHtml(ext.name)}">
                         ⚙️
                     </button>

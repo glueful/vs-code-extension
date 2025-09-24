@@ -557,78 +557,68 @@ export class AdvancedDebuggingProvider {
             vscode.Uri.joinPath(this.context.extensionUri, 'media', 'debug-panel.css')
         );
 
-        return `
-            <link rel="stylesheet" href="${cssUri}">
-            <div class="debug-container">
-                ${this.generateDebugTabs()}
-                ${this.generateDebugSections()}
-            </div>
-
-            <script>
-                // Secure tab switching using data attributes
-                document.addEventListener('click', (event) => {
-                    const target = event.target;
-                    if (target.dataset.action === 'showTab') {
-                        const tabName = target.dataset.tab;
-                        if (tabName) {
-                            // Hide all sections
-                            document.querySelectorAll('.debug-section').forEach(section => {
-                                section.classList.remove('active');
-                            });
-
-                            // Hide all tabs
-                            document.querySelectorAll('.debug-tab').forEach(tab => {
-                                tab.classList.remove('active');
-                            });
-
-                            // Show selected section and tab
-                            const section = document.getElementById(tabName);
-                            if (section) {
-                                section.classList.add('active');
-                                target.classList.add('active');
-                            }
-                        }
-                    } else if (target.dataset.action) {
-                        // Handle other actions via postMessage
-                        const action = target.dataset.action;
-                        const payload = {};
-
-                        // Collect data attributes
-                        for (const [key, value] of Object.entries(target.dataset)) {
-                            if (key !== 'action') {
-                                payload[key] = value;
-                            }
-                        }
-
-                        window.postMessage({ command: action, payload }, '*');
-                    }
-                });
-            </script>
-        `;
-    }
-
-    private generateDebugTabs(): string {
         const tabs = [
             { id: 'sessions', label: 'Debug Sessions', icon: '🔍' },
             { id: 'breakpoints', label: 'Breakpoints', icon: '🛑' },
-            { id: 'queries', label: 'Query Analysis', icon: '📊' },
+            { id: 'queries', label: 'DB Activity', icon: '📊' },
             { id: 'profiler', label: 'Profiler', icon: '⚡' },
             { id: 'memory', label: 'Memory', icon: '💾' }
         ];
 
-        return `
+        const tabInputsHtml = tabs.map((t, i) => `
+            <input type="radio" name="debug-tab" id="tab-${escapeHtml(t.id)}" ${i === 0 ? 'checked' : ''} style="display:none;">
+        `).join('');
+
+        const labels = `
             <div class="debug-tabs">
-                ${tabs.map((tab, index) => `
-                    <button
-                        class="debug-tab ${index === 0 ? 'active' : ''}"
-                        data-action="showTab"
-                        data-tab="${escapeHtml(tab.id)}"
-                    >
-                        ${escapeHtml(tab.icon)} ${escapeHtml(tab.label)}
-                    </button>
+                ${tabs.map((t, i) => `
+                    <label class="debug-tab ${i === 0 ? 'active' : ''}" for="tab-${escapeHtml(t.id)}">
+                        ${escapeHtml(t.icon)} ${escapeHtml(t.label)}
+                    </label>
                 `).join('')}
             </div>
         `;
+
+        const css = `
+            <style>
+                .debug-section { display: none; }
+                ${tabs.map(t => `#tab-${t.id}:checked ~ .debug-content #${t.id} { display: block; }`).join('\n')}
+                /* Tabs base styling */
+                .debug-tabs { display: flex; gap: 8px; border-bottom: 1px solid var(--vscode-widget-border); margin-bottom: 8px; }
+                .debug-tabs label {
+                    padding: 6px 10px;
+                    cursor: pointer;
+                    color: var(--vscode-foreground);
+                    border: 1px solid transparent;
+                    border-bottom: none;
+                    border-radius: 4px 4px 0 0;
+                }
+                .debug-tabs label:hover { background: var(--vscode-list-hoverBackground); }
+                /* Active tab style */
+                ${tabs.map((t) => `#tab-${t.id}:checked ~ .debug-tabs label[for="tab-${t.id}"] {
+                    background: var(--vscode-editor-background);
+                    border-color: var(--vscode-widget-border);
+                    border-bottom-color: var(--vscode-editor-background);
+                    color: var(--vscode-foreground);
+                    font-weight: 600;
+                }`).join('\n')}
+            </style>
+        `;
+
+        return `
+            <link rel="stylesheet" href="${cssUri}">
+            ${css}
+            <div class="debug-container">
+                ${tabInputsHtml}
+                ${labels}
+                ${this.generateDebugSections()}
+            </div>
+        `;
+    }
+
+    private generateDebugTabs(): string {
+        // Not used anymore; tabs are generated in generateSecureDebugContent
+        return '';
     }
 
     private generateDebugSections(): string {
@@ -673,8 +663,8 @@ export class AdvancedDebuggingProvider {
             <div id="breakpoints" class="debug-section">
                 <h3>Breakpoints (${this.breakpoints.length})</h3>
                 <div class="section-actions">
-                    <button class="btn" data-action="addBreakpoint">➕ Add Breakpoint</button>
-                    <button class="btn btn-danger" data-action="clearBreakpoints">🗑️ Clear All</button>
+                    <button class="btn" data-cmd="addBreakpoint">➕ Add Breakpoint</button>
+                    <button class="btn btn-danger" data-cmd="clearBreakpoints">🗑️ Clear All</button>
                 </div>
 
                 ${this.breakpoints.length === 0 ? '<p>No breakpoints set</p>' :
@@ -689,13 +679,13 @@ export class AdvancedDebuggingProvider {
                                 <div class="breakpoint-actions">
                                     <button
                                         class="btn"
-                                        data-action="goToBreakpoint"
+                                        data-cmd="goToBreakpoint"
                                         data-file="${escapeHtml(bp.file)}"
                                         data-line="${bp.line}"
                                     >Go To</button>
                                     <button
                                         class="btn btn-danger"
-                                        data-action="removeBreakpoint"
+                                        data-cmd="removeBreakpoint"
                                         data-file="${escapeHtml(bp.file)}"
                                         data-line="${bp.line}"
                                     >Remove</button>
@@ -709,30 +699,32 @@ export class AdvancedDebuggingProvider {
     }
 
     private generateQueriesSection(): string {
-        const recentQueries = this.queryLogs.slice(-20);
+        const rq = this.queryLogs.slice(-20);
+
+        const queriesHtml = rq.length === 0
+            ? '<p>No results available</p>'
+            : rq.slice().reverse().map(q => `
+                <div class="db-card ${q.duration > 1000 ? 'slow' : 'normal'}">
+                    <div class="db-header">
+                        <div class="db-metrics">
+                            <span class="metric">${escapeHtml(q.duration.toFixed(2))}ms</span>
+                            <span class="metric">${escapeHtml(q.timestamp.toLocaleTimeString())}</span>
+                            ${q.bindings.length > 0 ? `<span class="metric">${q.bindings.length} bindings</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="code">${escapeHtml(q.query)}</div>
+                    ${q.bindings.length > 0 ? `<div class="db-bindings">Bindings: ${escapeHtml(JSON.stringify(q.bindings))}</div>` : ''}
+                </div>
+            `).join('');
 
         return `
             <div id="queries" class="debug-section">
-                <h3>Recent Queries (${recentQueries.length})</h3>
+                <h3>Recent DB Activity (${rq.length})</h3>
                 <div class="section-actions">
-                    <button class="btn" data-action="analyzeQueries">📊 Full Analysis</button>
+                    <button class="btn" data-cmd="analyzeQueries">📊 Full Analysis</button>
                 </div>
 
-                ${recentQueries.length === 0 ? '<p>No query data available</p>' :
-                    recentQueries.slice().reverse().map(q => `
-                        <div class="query-card ${q.duration > 1000 ? 'slow-query' : 'normal-query'}">
-                            <div class="query-header">
-                                <div class="query-metrics">
-                                    <span class="metric">${escapeHtml(q.duration.toFixed(2))}ms</span>
-                                    <span class="metric">${escapeHtml(q.timestamp.toLocaleTimeString())}</span>
-                                    ${q.bindings.length > 0 ? `<span class="metric">${q.bindings.length} bindings</span>` : ''}
-                                </div>
-                            </div>
-                            <div class="code">${escapeHtml(q.query)}</div>
-                            ${q.bindings.length > 0 ? `<div class="query-bindings">Bindings: ${escapeHtml(JSON.stringify(q.bindings))}</div>` : ''}
-                        </div>
-                    `).join('')
-                }
+                ${queriesHtml}
             </div>
         `;
     }
@@ -744,8 +736,8 @@ export class AdvancedDebuggingProvider {
             <div id="profiler" class="debug-section">
                 <h3>Profiler Data (${recentProfiler.length})</h3>
                 <div class="section-actions">
-                    <button class="btn" data-action="startProfiling">▶️ Start Profiling</button>
-                    <button class="btn btn-danger" data-action="stopProfiling">⏹️ Stop Profiling</button>
+                    <button class="btn" data-cmd="startProfiling">▶️ Start Profiling</button>
+                    <button class="btn btn-danger" data-cmd="stopProfiling">⏹️ Stop Profiling</button>
                 </div>
 
                 <table class="table">
@@ -777,7 +769,7 @@ export class AdvancedDebuggingProvider {
             <div id="memory" class="debug-section">
                 <h3>Memory Analysis</h3>
                 <div class="section-actions">
-                    <button class="btn" data-action="analyzeMemory">📊 Analyze Memory Usage</button>
+                    <button class="btn" data-cmd="analyzeMemory">📊 Analyze Memory Usage</button>
                 </div>
                 <p>Memory profiler data will be displayed here after analysis.</p>
             </div>

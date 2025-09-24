@@ -89,7 +89,7 @@ export class UnifiedWebviewFactory {
      */
     updatePanelContent(panel: vscode.WebviewPanel, template: WebviewTemplate): void {
         const secureContent = this.generateSecureContent(template);
-        panel.webview.html = generateSecureHtml(secureContent);
+        panel.webview.html = generateSecureHtml(secureContent, panel.webview.cspSource);
     }
 
     /**
@@ -173,7 +173,7 @@ export class UnifiedWebviewFactory {
 
     private setupPanelContent(panel: vscode.WebviewPanel, template: WebviewTemplate): void {
         const secureContent = this.generateSecureContent(template);
-        panel.webview.html = generateSecureHtml(secureContent);
+        panel.webview.html = generateSecureHtml(secureContent, panel.webview.cspSource);
     }
 
     private setupMessageHandlers(
