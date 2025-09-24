@@ -33,23 +33,30 @@ function parseRoutesListOutput(stdout: string): RouteRow[] {
   return rows;
 }
 
-function generateRoutesContent(routes: RouteRow[]): string {
+function generateRoutesContent(routes: RouteRow[], currentFilter: string = ''): string {
   const esc = (s: string) => s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m] as string));
 
-  if (routes.length === 0) {
+  const filtered = currentFilter
+    ? routes.filter(r =>
+        (r.method + ' ' + r.path + ' ' + r.handler + ' ' + (r.middleware || ''))
+          .toLowerCase().includes(currentFilter.toLowerCase())
+      )
+    : routes;
+
+  if (filtered.length === 0) {
     return `
       <div class="container">
         <div class="card text-center">
           <h2>No Routes Found</h2>
           <p>No routes were discovered. Make sure your Glueful application has routes defined.</p>
-          <button class="btn" data-action="refresh">🔄 Refresh</button>
+          <button class="btn" data-cmd="refresh">🔄 Refresh</button>
         </div>
       </div>
     `;
   }
 
-  const rows = routes.map(r => `
-    <tr data-handler="${esc(r.handler)}" data-action="openHandler" data-handler="${esc(r.handler)}">
+  const rows = filtered.map(r => `
+    <tr data-handler="${esc(r.handler)}" data-cmd="openHandler" data-args='${JSON.stringify({ handler: r.handler }).replace(/'/g, '&#39;')}'>
       <td><span class="method-badge method-${r.method.toLowerCase()}">${esc(r.method)}</span></td>
       <td><code class="route-path">${esc(r.path)}</code></td>
       <td><code class="handler">${esc(r.handler)}</code></td>
@@ -62,11 +69,11 @@ function generateRoutesContent(routes: RouteRow[]): string {
       <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
           <h1>🛣️ Glueful Routes</h1>
-          <button class="btn" data-action="refresh">🔄 Refresh</button>
+          <button class="btn" data-cmd="refresh">🔄 Refresh</button>
         </div>
 
         <div style="margin-bottom: 15px;">
-          <input type="text" class="input" placeholder="🔍 Filter routes..." data-action="filter">
+          <input type="text" class="input" placeholder="🔍 Filter routes..." data-cmd="routes.filter" value="${esc(currentFilter)}">
         </div>
 
         <table class="table" id="routesTable">
@@ -84,7 +91,7 @@ function generateRoutesContent(routes: RouteRow[]): string {
         </table>
 
         <div class="mt-4 text-center">
-          <small>Total: ${routes.length} routes</small>
+          <small>Total: ${filtered.length} / ${routes.length} routes</small>
         </div>
       </div>
     </div>
@@ -131,19 +138,6 @@ function generateRoutesContent(routes: RouteRow[]): string {
         background: var(--vscode-list-hoverBackground);
       }
     </style>
-
-    <script>
-      function filterRoutes(query) {
-        const table = document.getElementById('routesTable');
-        const rows = table.querySelectorAll('tbody tr');
-        const searchTerm = query.toLowerCase();
-
-        rows.forEach(row => {
-          const text = row.textContent.toLowerCase();
-          row.style.display = text.includes(searchTerm) ? '' : 'none';
-        });
-      }
-    </script>
   `;
 }
 
@@ -187,6 +181,7 @@ export function registerRoutesPanel(context: vscode.ExtensionContext): void {
   }, 300);
 
   let currentPanel: vscode.WebviewPanel | undefined;
+  let currentFilter = '';
 
   const refreshPanel = async () => {
     if (!currentPanel) return;
@@ -201,7 +196,7 @@ export function registerRoutesPanel(context: vscode.ExtensionContext): void {
     const routes = await getRoutes();
     const template = new WebviewTemplateBuilder()
       .title('Glueful Routes')
-      .content(generateRoutesContent(routes))
+      .content(generateRoutesContent(routes, currentFilter))
       .addAction({
         id: 'refresh',
         label: 'Refresh Routes',
@@ -216,7 +211,11 @@ export function registerRoutesPanel(context: vscode.ExtensionContext): void {
         retainContextWhenHidden: false,
         handlers: {
           'refresh': () => refreshPanel(),
-          'openHandler': (handler: string) => openHandlerFile(handler)
+          'openHandler': (payload: any) => openHandlerFile(payload?.handler || ''),
+          'routes.filter': (payload: any) => {
+            currentFilter = String(payload?.value || '').trim();
+            refreshPanel();
+          }
         }
       },
       template,

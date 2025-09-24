@@ -52,17 +52,18 @@ export function getSecureWebviewOptions(extensionUri: vscode.Uri): vscode.Webvie
   };
 }
 
-export function generateSecureHtml(content: string): string {
+export function generateSecureHtml(markup: string, cspSource?: string): string {
   const scriptNonce = nonce();
   const styleNonce = nonce();
 
-  // Content Security Policy - no external resources, only local ones
+  // Allow only local (extension) resources and our own nonce'd script
+  const source = cspSource || 'vscode-resource:';
   const csp = [
     "default-src 'none'",
-    `script-src 'nonce-${scriptNonce}'`,
-    `style-src 'nonce-${styleNonce}' 'unsafe-inline'`, // unsafe-inline needed for dynamic styles
-    "img-src vscode-resource: https: data:",
-    "font-src vscode-resource:",
+    `script-src 'nonce-${scriptNonce}' ${source}`,
+    `style-src 'nonce-${styleNonce}' 'unsafe-inline' ${source}`,
+    `img-src ${source} https: data:`,
+    `font-src ${source}`,
     "connect-src 'none'"
   ].join('; ');
 
@@ -79,7 +80,7 @@ export function generateSecureHtml(content: string): string {
     </style>
 </head>
 <body>
-    ${escapeHtml(content)}
+    ${markup}
     <script nonce="${scriptNonce}">
         // VS Code API setup
         const vscode = acquireVsCodeApi();
@@ -125,6 +126,49 @@ export function generateSecureHtml(content: string): string {
             input._updateTimer = setTimeout(() => {
                 vscode.postMessage({ type: 'cmd', id: input.dataset.cmd, payload: { value: input.value, name: input.name } });
             }, 300);
+        });
+
+        // Optional: Chart initialization (if present)
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                // Restore last-selected tab (if present) using VS Code webview state
+                try {
+                    const state = vscode.getState && vscode.getState();
+                    const inputs = Array.from(document.querySelectorAll('input[name="debug-tab"]')) as HTMLInputElement[];
+                    if (inputs.length) {
+                        const desiredId = state?.activeTab;
+                        const toCheck = inputs.find(i => i.id === desiredId) || inputs[0];
+                        if (toCheck && !toCheck.checked) {
+                            toCheck.checked = true;
+                        }
+                        // Persist selection on change
+                        inputs.forEach(input => input.addEventListener('change', () => {
+                            if (input.checked) {
+                                vscode.setState && vscode.setState({ activeTab: input.id });
+                            }
+                        }));
+                    }
+                } catch {}
+
+                const chartDataEl = document.getElementById('chart-data');
+                const canvas = document.getElementById('metricsChart');
+                // Only initialize if chart data element and Chart library are present
+                if (chartDataEl && canvas && typeof Chart !== 'undefined' && canvas.getContext) {
+                    const cfg = JSON.parse(chartDataEl.textContent || '{}');
+                    const ctx = canvas.getContext('2d');
+                    // Provide sensible defaults if not specified
+                    const options = cfg.options || {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        elements: { point: { radius: 2 } },
+                        scales: {
+                            x: { display: true, title: { display: true, text: 'Time' } },
+                            y: { display: true, title: { display: true, text: 'Value' } }
+                        }
+                    };
+                    new Chart(ctx, { type: 'line', data: cfg.data || cfg, options });
+                }
+            } catch {}
         });
     </script>
 </body>

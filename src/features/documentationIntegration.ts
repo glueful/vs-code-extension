@@ -36,11 +36,16 @@ export class DocumentationIntegrationProvider {
     private documentationIndex: DocumentationEntry[] = [];
     private workspaceRoot: string;
     private frameworkDocsPath: string;
+    private configuredFrameworkRoot: string | undefined;
 
     constructor(private context: vscode.ExtensionContext) {
         this.workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '';
-        // Look for framework docs in vendor directory (composer installation)
-        this.frameworkDocsPath = path.join(this.workspaceRoot, 'vendor', 'glueful', 'framework', 'docs');
+        const cfg = vscode.workspace.getConfiguration('glueful');
+        this.configuredFrameworkRoot = cfg.get<string>('frameworkRoot') || undefined;
+        // Prefer configured framework root, else vendor directory
+        this.frameworkDocsPath = this.configuredFrameworkRoot
+            ? path.join(this.configuredFrameworkRoot, 'docs')
+            : path.join(this.workspaceRoot, 'vendor', 'glueful', 'framework', 'docs');
 
         this.initialize();
     }
@@ -67,15 +72,16 @@ export class DocumentationIntegrationProvider {
 
         // Check for local documentation (fallback)
         const docPaths = [
-            // Primary: Composer vendor directory
+            // Preferred: configured framework root docs
+            this.frameworkDocsPath,
+            path.join(this.frameworkDocsPath, 'cookbook'),
+
+            // Composer vendor docs
             path.join(this.workspaceRoot, 'vendor', 'glueful', 'framework', 'docs'),
             path.join(this.workspaceRoot, 'vendor', 'glueful', 'framework', 'docs', 'cookbook'),
 
-            // Secondary: Project docs
-            path.join(this.workspaceRoot, 'docs'),
-
-            // Legacy/Development paths
-            this.frameworkDocsPath
+            // Project docs
+            path.join(this.workspaceRoot, 'docs')
         ];
 
         for (const docPath of docPaths) {
@@ -752,7 +758,7 @@ export class DocumentationIntegrationProvider {
                     ${docs.map(doc => `
                         <div class="card cookbook-item"
                              style="cursor: pointer;"
-                             data-action="openDoc"
+                             data-cmd="openDoc"
                              data-path="${escapeHtml(doc.url || doc.path)}"
                              data-is-url="${!!doc.url}">
                             <div class="cookbook-title">
@@ -879,19 +885,29 @@ export class DocumentationIntegrationProvider {
     }
 
     private setupDocumentationWatcher(): void {
-        // Watch vendor/glueful/framework/docs for documentation changes
-        const vendorDocsPath = path.join(this.workspaceRoot, 'vendor', 'glueful', 'framework', 'docs');
+        // Watch configured framework docs if provided
+        if (this.configuredFrameworkRoot) {
+            const cfgDocs = path.join(this.configuredFrameworkRoot, 'docs');
+            if (fs.existsSync(cfgDocs)) {
+                const watcher = vscode.workspace.createFileSystemWatcher(
+                    new vscode.RelativePattern(cfgDocs, '**/*.md')
+                );
+                watcher.onDidChange(() => this.refreshDocumentation());
+                watcher.onDidCreate(() => this.refreshDocumentation());
+                watcher.onDidDelete(() => this.refreshDocumentation());
+                this.context.subscriptions.push(watcher);
+            }
+        }
 
-        // Only set up watcher if the vendor docs exist
+        // Watch vendor/glueful/framework/docs as fallback
+        const vendorDocsPath = path.join(this.workspaceRoot, 'vendor', 'glueful', 'framework', 'docs');
         if (fs.existsSync(vendorDocsPath)) {
             const watcher = vscode.workspace.createFileSystemWatcher(
                 new vscode.RelativePattern(vendorDocsPath, '**/*.md')
             );
-
             watcher.onDidChange(() => this.refreshDocumentation());
             watcher.onDidCreate(() => this.refreshDocumentation());
             watcher.onDidDelete(() => this.refreshDocumentation());
-
             this.context.subscriptions.push(watcher);
         }
 

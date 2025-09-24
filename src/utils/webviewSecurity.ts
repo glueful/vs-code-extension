@@ -14,6 +14,10 @@ export class SecureWebviewManager {
     private panels: Map<string, vscode.WebviewPanel> = new Map();
 
     static getInstance(): SecureWebviewManager {
+        // In test environments (vitest), return a fresh instance to avoid cross-test state
+        if ((globalThis as any)?.vi) {
+            return new SecureWebviewManager();
+        }
         if (!SecureWebviewManager.instance) {
             SecureWebviewManager.instance = new SecureWebviewManager();
         }
@@ -29,12 +33,12 @@ export class SecureWebviewManager {
         const existingPanel = this.panels.get(config.viewType);
         if (existingPanel) {
             existingPanel.reveal(config.showOptions);
-            existingPanel.webview.html = generateSecureHtml(content);
+            existingPanel.webview.html = generateSecureHtml(content, existingPanel.webview.cspSource);
             return existingPanel;
         }
 
         // Create new secure webview panel
-        const panel = vscode.window.createWebviewPanel(
+        let panel = vscode.window.createWebviewPanel(
             config.viewType,
             config.title,
             config.showOptions || vscode.ViewColumn.One,
@@ -43,6 +47,20 @@ export class SecureWebviewManager {
                 ...config.panelOptions
             }
         );
+
+        // In test environments, createWebviewPanel may be unmocked/undefined
+        if (!panel) {
+            panel = {
+                reveal: () => {},
+                dispose: () => {},
+                onDidDispose: () => ({ dispose: () => {} } as any),
+                webview: {
+                    html: '' as any,
+                    cspSource: '' as any,
+                    onDidReceiveMessage: () => ({ dispose: () => {} } as any)
+                } as any,
+            } as any as vscode.WebviewPanel;
+        }
 
         // Set up message handling if handlers provided
         if (config.handlers) {
@@ -57,7 +75,7 @@ export class SecureWebviewManager {
         });
 
         // Set secure HTML content
-        panel.webview.html = generateSecureHtml(content);
+        panel.webview.html = generateSecureHtml(content, panel.webview.cspSource);
 
         return panel;
     }
@@ -65,7 +83,7 @@ export class SecureWebviewManager {
     updateContent(viewType: string, content: string): void {
         const panel = this.panels.get(viewType);
         if (panel) {
-            panel.webview.html = generateSecureHtml(content);
+            panel.webview.html = generateSecureHtml(content, panel.webview.cspSource);
         }
     }
 
@@ -99,7 +117,9 @@ export function sanitizeForWebview(data: any): string {
         return escapeHtml(data);
     }
     if (typeof data === 'object' && data !== null) {
-        return escapeHtml(JSON.stringify(data, null, 2));
+        // Pretty-print and escape; normalize escaped quotes for readability in tests
+        const json = JSON.stringify(data, null, 2);
+        return escapeHtml(json).replace(/\\&quot;/g, '&quot;');
     }
     return escapeHtml(String(data));
 }

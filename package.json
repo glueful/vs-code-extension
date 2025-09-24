@@ -46,7 +46,7 @@
     "onCommand:glueful.performance.memoryProfile",
     "onCommand:glueful.performance.cacheAnalysis",
     "onCommand:glueful.security.showReport",
-    "onCommand:glueful.security.fixSecurityIssue",
+    "onCommand:glueful.security.fixIssue",
     "onCommand:glueful.security.showPolicies",
     "onCommand:glueful.security.auditLogs",
     "onCommand:glueful.docs.cookbook",
@@ -227,18 +227,6 @@
         "title": "Glueful: extensions:info"
       },
       {
-        "command": "glueful.extensions.enable",
-        "title": "Glueful: extensions:enable"
-      },
-      {
-        "command": "glueful.extensions.disable",
-        "title": "Glueful: extensions:disable"
-      },
-      {
-        "command": "glueful.extensions.create",
-        "title": "Glueful: extensions:create"
-      },
-      {
         "command": "glueful.extensions.list",
         "title": "Glueful: extensions:list"
       },
@@ -299,10 +287,6 @@
         "title": "Glueful: security:revoke-tokens"
       },
       {
-        "command": "glueful.security.scan",
-        "title": "Glueful: security:scan"
-      },
-      {
         "command": "glueful.notifications.processRetries",
         "title": "Glueful: notifications:process-retries"
       },
@@ -329,10 +313,6 @@
       {
         "command": "glueful.container.compile",
         "title": "Glueful: container:compile"
-      },
-      {
-        "command": "glueful.container.validate",
-        "title": "Glueful: container:validate"
       },
       {
         "command": "glueful.container.lazyStatus",
@@ -366,10 +346,7 @@
         "command": "glueful.test.integration",
         "title": "Glueful: test:integration"
       },
-      {
-        "command": "glueful.test.coverage",
-        "title": "Glueful: test:coverage"
-      },
+      
       {
         "command": "glueful.analyze",
         "title": "Glueful: analyze (PHPStan)"
@@ -486,6 +463,11 @@
           "type": "string",
           "default": "php vendor/bin/glueful",
           "description": "Command to run the Glueful CLI (e.g., `php vendor/bin/glueful` or `vendor/bin/glueful`)."
+        },
+        "glueful.frameworkRoot": {
+          "type": "string",
+          "default": "",
+          "description": "Absolute path to a local Glueful framework repository (optional). Used to index local docs instead of vendor copies."
         }
       }
     },

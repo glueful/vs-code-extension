@@ -60,7 +60,7 @@
 
 .session-card,
 .breakpoint-card,
-.query-card {
+.db-card {
     background: #252526;
     border: 1px solid #3e3e42;
     border-radius: 6px;
@@ -70,7 +70,7 @@
 
 .session-header,
 .breakpoint-header,
-.query-header {
+.db-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -108,14 +108,14 @@
     font-size: 0.9em;
 }
 
-.query-metrics {
+.db-metrics {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
     margin-bottom: 8px;
 }
 
-.query-bindings {
+.db-bindings {
     margin-top: 8px;
     font-size: 0.9em;
     color: #9cdcfe;
@@ -184,11 +184,11 @@
     font-size: 13px;
 }
 
-.slow-query {
+.slow {
     border-left: 3px solid #f14c4c;
 }
 
-.normal-query {
+.normal {
     border-left: 3px solid #4ec9b0;
 }
 

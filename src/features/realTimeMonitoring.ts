@@ -448,6 +448,20 @@ export class RealTimeMonitoringProvider {
             vscode.Uri.joinPath(this.context.extensionUri, 'media', 'monitoring.css')
         );
 
+        // Provide chart configuration via JSON that the base secure script can read
+        const chartCfg = {
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                elements: { point: { radius: 2 } },
+                scales: {
+                    x: { display: true, title: { display: true, text: 'Time' } },
+                    y: { display: true, title: { display: true, text: 'Value' } }
+                }
+            }
+        };
+
         return `
             <link rel="stylesheet" href="${cssUri}">
             <script src="${chartJsUri}"></script>
@@ -458,57 +472,7 @@ export class RealTimeMonitoringProvider {
                 ${this.generateAlertsSection()}
             </div>
 
-            <script>
-                // Initialize chart with secure data
-                let metricsChart;
-
-                document.addEventListener('DOMContentLoaded', () => {
-                    const ctx = document.getElementById('metricsChart');
-                    if (ctx) {
-                        metricsChart = new Chart(ctx.getContext('2d'), {
-                            type: 'line',
-                            data: ${JSON.stringify(chartData)},
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                scales: {
-                                    x: {
-                                        display: true,
-                                        title: {
-                                            display: true,
-                                            text: 'Time'
-                                        }
-                                    },
-                                    y: {
-                                        display: true,
-                                        title: {
-                                            display: true,
-                                            text: 'Value'
-                                        }
-                                    }
-                                },
-                                elements: {
-                                    point: {
-                                        radius: 2
-                                    }
-                                }
-                            }
-                        });
-                    }
-                });
-
-                // Handle auto-refresh
-                let refreshInterval = setInterval(() => {
-                    window.postMessage({ command: 'refresh' }, '*');
-                }, 10000);
-
-                // Clean up on dispose
-                window.addEventListener('unload', () => {
-                    if (refreshInterval) {
-                        clearInterval(refreshInterval);
-                    }
-                });
-            </script>
+            <script id="chart-data" type="application/json">${escapeHtml(JSON.stringify(chartCfg))}</script>
         `;
     }
 
@@ -566,7 +530,7 @@ export class RealTimeMonitoringProvider {
                         </div>
                     `).join('')
                 }
-                <button class="btn btn-secondary" data-action="configureAlerts">⚙️ Configure Alerts</button>
+                <button class="btn btn-secondary" data-cmd="configureAlerts">⚙️ Configure Alerts</button>
             </div>
         `;
     }
